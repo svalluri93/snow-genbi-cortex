@@ -6,6 +6,10 @@ CREATE OR ALTER VERSIONED SCHEMA code_schema;
 GRANT USAGE ON SCHEMA code_schema TO APPLICATION ROLE invstintl_app_role;
 
 
+CREATE VIEW IF NOT EXISTS code_schema.NAV_DATA
+  AS SELECT *
+  FROM shared_data.NAV_DATA;
+GRANT SELECT ON VIEW code_schema.NAV_DATA TO APPLICATION ROLE invstintl_app_role;
 
 create or replace procedure code_schema.update_reference(ref_name string, operation string, ref_or_alias string)
 returns string
