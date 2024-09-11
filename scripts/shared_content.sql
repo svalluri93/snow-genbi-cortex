@@ -10,7 +10,7 @@ grant reference_usage on database ML_APP
 -- Create a view that references the provider table.
 -- The view is going to be shared by the package to the application.
 create view if not exists shared_data.NAV_DATA
-  as select * from ML_APP.ML_MODELS.NAV_DATA LIMIT 10;
+  as select * from ML_APP.ML_MODELS.NAV_DATA ORDER BY DATE DESC LIMIT 10;
 
 grant usage on schema shared_data
   to share in application package {{ package_name }};
