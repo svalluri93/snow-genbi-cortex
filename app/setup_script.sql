@@ -1,21 +1,37 @@
--- This is the setup script that runs while installing a Snowflake Native App in a consumer account.
--- For more information on how to create setup file, visit https://docs.snowflake.com/en/developer-guide/native-apps/creating-setup-script
 
--- A general guideline to building this script looks like:
--- 1. Create application roles
-CREATE APPLICATION ROLE IF NOT EXISTS app_public;
+CREATE APPLICATION ROLE IF NOT EXISTS invstintl_app_role;
 
--- 2. Create a versioned schema to hold those UDFs/Stored Procedures
-CREATE OR ALTER VERSIONED SCHEMA core;
-GRANT USAGE ON SCHEMA core TO APPLICATION ROLE app_public;
 
--- 3. Create a streamlit object using the code you wrote in you wrote in src/module-ui, as shown below. 
--- The `from` value is derived from the stage path described in snowflake.yml
-CREATE OR REPLACE STREAMLIT core.ui
-     FROM '/streamlit/'
-     MAIN_FILE = 'dashboard.py';
+CREATE OR ALTER VERSIONED SCHEMA code_schema;
+GRANT USAGE ON SCHEMA code_schema TO APPLICATION ROLE invstintl_app_role;
 
--- 4. Grant appropriate privileges over these objects to your application roles. 
-GRANT USAGE ON STREAMLIT core.ui TO APPLICATION ROLE app_public;
 
--- A detailed explanation can be found at https://docs.snowflake.com/en/developer-guide/native-apps/adding-streamlit 
+
+create or replace procedure code_schema.update_reference(ref_name string, operation string, ref_or_alias string)
+returns string
+language sql
+as $$
+begin
+  case (operation)
+    when 'ADD' then
+       select system$set_reference(:ref_name, :ref_or_alias);
+    when 'REMOVE' then
+       select system$remove_reference(:ref_name, :ref_or_alias);
+    when 'CLEAR' then
+       select system$remove_all_references(:ref_name);
+    else
+       return 'Unknown operation: ' || operation;
+  end case;
+  return 'Success';
+end;
+$$;
+
+grant usage on procedure code_schema.update_reference(string, string, string) to application role invstintl_app_role;
+
+
+CREATE STREAMLIT IF NOT EXISTS code_schema.investintel
+  FROM '/streamlit'
+  MAIN_FILE = '/investintel.py'
+;
+
+GRANT USAGE ON STREAMLIT code_schema.investintel TO APPLICATION ROLE invstintl_app_role;

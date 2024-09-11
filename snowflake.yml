@@ -1,12 +1,17 @@
 definition_version: 1
 native_app:
-  name: snowflake_cortex
-  source_stage: app_src.stage
+  name: investintel_cortex
+  source_stage: stage_content.investintel_stage
   artifacts:
     - src: app/*
       dest: ./
-    - src: src/ui/*
-      dest: streamlit/
+    - streamlit/investintel.py
+    - streamlit/cortexCaller.py
+    - streamlit/environment.yml
   package:
+    name: investintel_cortex_pkg
     scripts:
-      - scripts/shared_content.sql
+       - scripts/shared_content.sql
+  application:
+    name: investintel_cortex
+    debug: false

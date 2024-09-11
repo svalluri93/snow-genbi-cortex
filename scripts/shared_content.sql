@@ -1,16 +1,20 @@
 -- Grant usage to a external database from the application.
-create schema if not exists {{ package_name }}.PACKAGE_SHARED;
-use schema {{ package_name }}.PACKAGE_SHARED;
 
-grant reference_usage on database SONGS_CORTEX_DB
+USE APPLICATION PACKAGE {{package_name}};
+CREATE SCHEMA IF NOT EXISTS shared_data;
+USE SCHEMA shared_data;
+
+grant reference_usage on database ML_APP
     to share in application package {{ package_name }};
 
 -- Create a view that references the provider table.
 -- The view is going to be shared by the package to the application.
-create view if not exists PACKAGE_SHARED.PROVIDER_SONGS_VIEW
-  as select * from SONGS_CORTEX_DB.SONGS_CORTEX_SCHEMA.SONGS_PROVIDER_DATA;
+create view if not exists shared_data.NAV_DATA
+  as select * from ML_APP.ML_MODELS.NAV_DATA LIMIT 10;
 
-grant usage on schema PACKAGE_SHARED
+grant usage on schema shared_data
   to share in application package {{ package_name }};
-grant select on view PACKAGE_SHARED.PROVIDER_SONGS_VIEW
+grant select on view shared_data.NAV_DATA
   to share in application package {{ package_name }};
+
+
