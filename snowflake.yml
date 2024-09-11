@@ -8,6 +8,8 @@ native_app:
     - streamlit/investintel.py
     - streamlit/cortexCaller.py
     - streamlit/environment.yml
+    - streamlit/pages/chat_interface.py
+    - streamlit/pages/cortexCaller.py
   package:
     name: investintel_cortex_pkg
     scripts:
