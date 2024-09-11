@@ -47,7 +47,8 @@ if prompt:
     with st.chat_message("assistant"):  
         context = ",".join(f"role:{message['role']} content:{message['content']}" for message in st.session_state.messages)
         #response = Complete(model, f"Instructions:{instructions}, Context:{context}, Prompt:{prompt}") 
-        response = CortexCaller.call_complete(f"Instructions:{instructions}, Context:{context}, Prompt:{prompt}")
+        input = f"Instructions:{instructions}, Context:{context}, Prompt:{prompt}"
+        response = CortexCaller.call_complete(input)
         st.markdown(response)
     
         st.session_state.messages.append({
